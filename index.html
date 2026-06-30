@@ -145,19 +145,38 @@
 
 <script>
 const LS_KEY = "tool_portal_v1";
+const SEED_VERSION = 2; // 既存ユーザーへ新ツールを一度だけ追加するための版数
 const uid = () => Math.random().toString(36).slice(2,9);
-const EMOJIS = ["🍼","📊","💰","📦","🚚","📝","🌲","📷","📧","✅","📁","🔗","🧮","📈","🛒","🏢","⚙️","🤖","🧾","📞","💡","🔔","🗂️","🌐"];
+const EMOJIS = ["🍼","📊","💰","📦","🚚","📝","🌲","📷","📧","✅","📁","🔗","🧮","📈","🛒","🏢","⚙️","🤖","🧾","📞","💡","🔔","🗂️","🌐","🏰","🏨","🔪","🗓️"];
 
 const DEFAULT = {
   theme:"light",
+  seedVersion:SEED_VERSION,
   cats:[
     {id:uid(), emoji:"🌲", name:"林材木店・仕事", tools:[
       {id:uid(), name:"売れ行き＆在庫ボード", url:"https://h02050d-ship-it.github.io/salesboard/", desc:"EC在庫を見やすく・双方向同期", icon:"📊"},
+      {id:uid(), name:"受注・問い合わせ管理", url:"https://h02050d-ship-it.github.io/order-desk/", desc:"楽天/ヤフーの受注・問い合わせ", icon:"🛒"},
+      {id:uid(), name:"見積書作成", url:"https://h02050d-ship-it.github.io/fare-calculator/mitsumori.html", desc:"商品＋送料で見積書を自動作成", icon:"🧾"},
+      {id:uid(), name:"納品書作成", url:"https://h02050d-ship-it.github.io/nouhinsho/", desc:"納品書を作成・PDF化", icon:"📦"},
       {id:uid(), name:"運賃計算ツール", url:"https://h02050d-ship-it.github.io/fare-calculator/", desc:"商品＋送料を自動計算", icon:"🧮"},
+      {id:uid(), name:"加工予定表", url:"https://h02050d-ship-it.github.io/kakou-yotei/", desc:"加工場の予定を管理", icon:"🗓️"},
+      {id:uid(), name:"現場呼出（LINE）", url:"https://h02050d-ship-it.github.io/genba-call/", desc:"加工場へLINEで呼出通知", icon:"📞"},
       {id:uid(), name:"林材木店 HP", url:"https://hayazai.com/", desc:"自社ホームページ", icon:"🌲"},
+    ]},
+    {id:uid(), emoji:"📊", name:"経営・書類", tools:[
+      {id:uid(), name:"経営日報", url:"https://h02050d-ship-it.github.io/keiei-nippou/", desc:"マネフォ連携の経営ダッシュボード", icon:"📈"},
+      {id:uid(), name:"書類自動保存ボード", url:"https://h02050d-ship-it.github.io/doc-board/", desc:"請求書・領収書の自動保存ステータス", icon:"🗂️"},
+    ]},
+    {id:uid(), emoji:"⚙️", name:"生産・設備", tools:[
+      {id:uid(), name:"モルダー刃物 使用量管理", url:"https://h02050d-ship-it.github.io/molder-hamono/", desc:"刃物の使用量を管理", icon:"🔪"},
+      {id:uid(), name:"モルダー軸位置管理", url:"https://h02050d-ship-it.github.io/molder/", desc:"モルダー軸位置の記録", icon:"⚙️"},
     ]},
     {id:uid(), emoji:"✅", name:"管理・タスク", tools:[
       {id:uid(), name:"会社タスク管理", url:"https://h02050d-ship-it.github.io/task-manager/", desc:"会社全体のタスク管理", icon:"✅"},
+    ]},
+    {id:uid(), emoji:"🧳", name:"旅行・おでかけ", tools:[
+      {id:uid(), name:"ミラコスタ空室チェック", url:"https://h02050d-ship-it.github.io/miracosta-dashboard/", desc:"ホテルミラコスタの空室を確認", icon:"🏰"},
+      {id:uid(), name:"川路ホテル", url:"https://h02050d-ship-it.github.io/kawaji-hotel/", desc:"川路ホテル", icon:"🏨"},
     ]},
     {id:uid(), emoji:"🏠", name:"暮らし・家族", tools:[
       {id:uid(), name:"育児記録アプリ", url:"https://h02050d-ship-it.github.io/baby-log/", desc:"ミルク・離乳食を夫婦で同期", icon:"🍼"},
@@ -172,8 +191,27 @@ const DEFAULT = {
 let data = load();
 
 function load(){
-  try{ const v = JSON.parse(localStorage.getItem(LS_KEY)); if(v && v.cats) return v; }catch(e){}
-  return JSON.parse(JSON.stringify(DEFAULT));
+  let v=null;
+  try{ v = JSON.parse(localStorage.getItem(LS_KEY)); }catch(e){}
+  if(!v || !v.cats) return JSON.parse(JSON.stringify(DEFAULT));
+  // 既存データに、まだ無い新ツールだけを一度だけ追加（URLで重複判定／削除済みは復活させない）
+  if(v.seedVersion !== SEED_VERSION){
+    const existingUrls = new Set();
+    v.cats.forEach(c=> c.tools.forEach(t=> existingUrls.add((t.url||'').replace(/\/$/,''))));
+    DEFAULT.cats.forEach(dc=>{
+      let cat = v.cats.find(c=> c.name===dc.name);
+      if(!cat){ cat={id:uid(), emoji:dc.emoji, name:dc.name, tools:[]}; v.cats.push(cat); }
+      dc.tools.forEach(dt=>{
+        if(!existingUrls.has((dt.url||'').replace(/\/$/,''))){
+          cat.tools.push({id:uid(), name:dt.name, url:dt.url, desc:dt.desc, icon:dt.icon});
+          existingUrls.add((dt.url||'').replace(/\/$/,''));
+        }
+      });
+    });
+    v.seedVersion = SEED_VERSION;
+    localStorage.setItem(LS_KEY, JSON.stringify(v));
+  }
+  return v;
 }
 function save(){ localStorage.setItem(LS_KEY, JSON.stringify(data)); }
 function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),1600); }
