@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>マイ・ツールポータル</title>
+<style>
+  :root{
+    --bg:#0f1218; --panel:#171c26; --panel2:#1e2430; --line:#2a3140;
+    --text:#e8ecf3; --sub:#9aa6b8; --accent:#4f8cff; --accent2:#3b6fd4;
+    --danger:#ff5d6c; --ok:#33d39a; --chip:#222b3a;
+    --radius:14px; --shadow:0 6px 20px rgba(0,0,0,.35);
+  }
+  [data-theme="light"]{
+    --bg:#f3f5f9; --panel:#ffffff; --panel2:#f7f9fc; --line:#e3e8f0;
+    --text:#1b2330; --sub:#5d6b80; --accent:#2f6bff; --accent2:#2257d6;
+    --chip:#eef2f8; --shadow:0 6px 18px rgba(20,40,80,.10);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Segoe UI","Hiragino Kaku Gothic ProN","Meiryo",system-ui,sans-serif;
+    background:var(--bg);color:var(--text);min-height:100vh}
+  header{position:sticky;top:0;z-index:30;background:linear-gradient(180deg,var(--bg),rgba(0,0,0,0));
+    backdrop-filter:blur(6px);padding:14px 22px 10px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+  .brand{font-size:20px;font-weight:800;letter-spacing:.5px;display:flex;align-items:center;gap:10px}
+  .brand .dot{width:12px;height:12px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px var(--accent)}
+  .search{flex:1;min-width:200px;max-width:520px;display:flex;align-items:center;gap:8px;
+    background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:8px 14px}
+  .search input{flex:1;background:none;border:none;outline:none;color:var(--text);font-size:15px}
+  .btn{cursor:pointer;border:1px solid var(--line);background:var(--panel);color:var(--text);
+    border-radius:10px;padding:9px 13px;font-size:14px;font-weight:600;display:inline-flex;align-items:center;gap:6px;
+    transition:.15s;white-space:nowrap}
+  .btn:hover{border-color:var(--accent);transform:translateY(-1px)}
+  .btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+  .btn.ghost{background:transparent}
+  .btn.sm{padding:6px 9px;font-size:13px}
+  main{padding:8px 22px 80px}
+  .cat{margin:22px 0}
+  .cat-head{display:flex;align-items:center;gap:10px;margin-bottom:12px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+  .cat-handle{cursor:grab;color:var(--sub);font-size:18px;user-select:none}
+  .cat-title{font-size:17px;font-weight:800;display:flex;align-items:center;gap:8px}
+  .cat-emoji{font-size:20px}
+  .cat-count{font-size:12px;color:var(--sub);background:var(--chip);padding:2px 9px;border-radius:999px}
+  .cat-actions{margin-left:auto;display:flex;gap:6px;opacity:.55;transition:.15s}
+  .cat:hover .cat-actions{opacity:1}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px;min-height:64px}
+  .grid.dragover{outline:2px dashed var(--accent);outline-offset:6px;border-radius:12px}
+  .card{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+    padding:16px 14px;cursor:pointer;transition:.15s;display:flex;flex-direction:column;gap:10px;
+    box-shadow:var(--shadow);overflow:hidden}
+  .card:hover{transform:translateY(-3px);border-color:var(--accent)}
+  .card.dragging{opacity:.4}
+  .card-top{display:flex;align-items:center;gap:11px}
+  .icon{width:42px;height:42px;border-radius:11px;flex:0 0 auto;display:flex;align-items:center;justify-content:center;
+    font-size:22px;background:var(--panel2);border:1px solid var(--line);overflow:hidden}
+  .icon img{width:100%;height:100%;object-fit:cover}
+  .card-name{font-size:15px;font-weight:700;line-height:1.25;word-break:break-word}
+  .card-desc{font-size:12.5px;color:var(--sub);line-height:1.4;min-height:0}
+  .card-host{font-size:11px;color:var(--sub);opacity:.8;margin-top:auto;display:flex;align-items:center;gap:5px}
+  .card-tools{position:absolute;top:8px;right:8px;display:flex;gap:4px;opacity:0;transition:.15s}
+  .card:hover .card-tools{opacity:1}
+  .ic-btn{width:26px;height:26px;border-radius:7px;border:1px solid var(--line);background:var(--panel2);
+    display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px;color:var(--sub)}
+  .ic-btn:hover{color:var(--text);border-color:var(--accent)}
+  .add-card{border:2px dashed var(--line);background:transparent;align-items:center;justify-content:center;
+    color:var(--sub);font-weight:700;font-size:14px;min-height:90px}
+  .add-card:hover{color:var(--accent);border-color:var(--accent)}
+  .empty{color:var(--sub);text-align:center;padding:50px 20px}
+  /* modal */
+  .ov{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:20px}
+  .ov.show{display:flex}
+  .modal{background:var(--panel);border:1px solid var(--line);border-radius:16px;width:min(460px,100%);
+    padding:22px;box-shadow:var(--shadow);max-height:90vh;overflow:auto}
+  .modal h3{margin:0 0 16px;font-size:18px}
+  .field{margin-bottom:14px}
+  .field label{display:block;font-size:13px;color:var(--sub);margin-bottom:6px;font-weight:600}
+  .field input,.field select,.field textarea{width:100%;background:var(--panel2);border:1px solid var(--line);
+    border-radius:9px;padding:10px 12px;color:var(--text);font-size:14px;outline:none;font-family:inherit}
+  .field input:focus,.field select:focus,.field textarea:focus{border-color:var(--accent)}
+  .emoji-pick{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+  .emoji-pick span{cursor:pointer;font-size:20px;padding:4px 6px;border-radius:8px;border:1px solid transparent}
+  .emoji-pick span:hover{border-color:var(--accent);background:var(--panel2)}
+  .modal-actions{display:flex;gap:10px;margin-top:20px}
+  .modal-actions .btn{flex:1;justify-content:center}
+  .modal-actions .btn.danger{color:var(--danger);border-color:var(--danger)}
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--panel);
+    border:1px solid var(--accent);padding:11px 18px;border-radius:10px;box-shadow:var(--shadow);
+    z-index:60;opacity:0;transition:.25s;pointer-events:none;font-size:14px}
+  .toast.show{opacity:1}
+  .hint{font-size:12px;color:var(--sub);margin-top:-6px;margin-bottom:14px}
+  @media(max-width:600px){ main{padding:8px 12px 80px} header{padding:12px} }
+</style>
+</head>
+<body>
+<header>
+  <div class="brand"><span class="dot"></span>マイ・ツールポータル</div>
+  <div class="search">
+    🔍<input id="search" placeholder="ツール名・説明で検索…" autocomplete="off">
+  </div>
+  <button class="btn ghost sm" id="themeBtn" title="テーマ切替">🌙</button>
+  <button class="btn sm" id="addCatBtn">＋ カテゴリ</button>
+  <button class="btn sm" id="exportBtn" title="バックアップ書き出し">⤓ 保存</button>
+  <button class="btn sm" id="importBtn" title="バックアップ読み込み">⤒ 復元</button>
+  <input type="file" id="importFile" accept="application/json" hidden>
+</header>
+<main id="main"></main>
+
+<!-- Tool modal -->
+<div class="ov" id="toolOv">
+  <div class="modal">
+    <h3 id="toolTitle">ツールを追加</h3>
+    <div class="field"><label>名前</label><input id="t_name" placeholder="例：育児記録アプリ"></div>
+    <div class="field"><label>URL / リンク</label><input id="t_url" placeholder="https://… / ドライブのリンク"></div>
+    <div class="hint">GoogleドライブのフォルダやファイルのURLもそのまま貼れます。</div>
+    <div class="field"><label>説明（任意）</label><input id="t_desc" placeholder="例：ミルク・離乳食を夫婦で同期"></div>
+    <div class="field"><label>カテゴリ</label><select id="t_cat"></select></div>
+    <div class="field"><label>アイコン（絵文字、空欄ならサイトのアイコン自動）</label>
+      <input id="t_icon" placeholder="例：🍼" maxlength="4">
+      <div class="emoji-pick" id="emojiPick"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn danger" id="t_delete" style="display:none">削除</button>
+      <button class="btn" id="t_cancel">キャンセル</button>
+      <button class="btn primary" id="t_save">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- Category modal -->
+<div class="ov" id="catOv">
+  <div class="modal">
+    <h3 id="catTitle">カテゴリを追加</h3>
+    <div class="field"><label>絵文字</label><input id="c_emoji" placeholder="📁" maxlength="4">
+      <div class="emoji-pick" id="catEmojiPick"></div>
+    </div>
+    <div class="field"><label>カテゴリ名</label><input id="c_name" placeholder="例：仕事ツール"></div>
+    <div class="modal-actions">
+      <button class="btn danger" id="c_delete" style="display:none">削除</button>
+      <button class="btn" id="c_cancel">キャンセル</button>
+      <button class="btn primary" id="c_save">保存</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const LS_KEY = "tool_portal_v1";
+const uid = () => Math.random().toString(36).slice(2,9);
+const EMOJIS = ["🍼","📊","💰","📦","🚚","📝","🌲","📷","📧","✅","📁","🔗","🧮","📈","🛒","🏢","⚙️","🤖","🧾","📞","💡","🔔","🗂️","🌐"];
+
+const DEFAULT = {
+  theme:"light",
+  cats:[
+    {id:uid(), emoji:"🌲", name:"林材木店・仕事", tools:[
+      {id:uid(), name:"売れ行き＆在庫ボード", url:"https://h02050d-ship-it.github.io/salesboard/", desc:"EC在庫を見やすく・双方向同期", icon:"📊"},
+      {id:uid(), name:"運賃計算ツール", url:"https://h02050d-ship-it.github.io/fare-calculator/", desc:"商品＋送料を自動計算", icon:"🧮"},
+      {id:uid(), name:"林材木店 HP", url:"https://hayazai.com/", desc:"自社ホームページ", icon:"🌲"},
+    ]},
+    {id:uid(), emoji:"✅", name:"管理・タスク", tools:[
+      {id:uid(), name:"会社タスク管理", url:"https://h02050d-ship-it.github.io/task-manager/", desc:"会社全体のタスク管理", icon:"✅"},
+    ]},
+    {id:uid(), emoji:"🏠", name:"暮らし・家族", tools:[
+      {id:uid(), name:"育児記録アプリ", url:"https://h02050d-ship-it.github.io/baby-log/", desc:"ミルク・離乳食を夫婦で同期", icon:"🍼"},
+    ]},
+    {id:uid(), emoji:"📁", name:"よく使うリンク", tools:[
+      {id:uid(), name:"Googleドライブ", url:"https://drive.google.com/", desc:"会社フォルダ 4.大樹 など", icon:"📁"},
+      {id:uid(), name:"Gmail", url:"https://mail.google.com/", desc:"", icon:"📧"},
+    ]},
+  ]
+};
+
+let data = load();
+
+function load(){
+  try{ const v = JSON.parse(localStorage.getItem(LS_KEY)); if(v && v.cats) return v; }catch(e){}
+  return JSON.parse(JSON.stringify(DEFAULT));
+}
+function save(){ localStorage.setItem(LS_KEY, JSON.stringify(data)); }
+function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),1600); }
+function host(url){ try{ return new URL(url).hostname.replace('www.',''); }catch(e){ return ''; } }
+function favicon(url){ try{ const h=new URL(url).hostname; return `https://www.google.com/s2/favicons?domain=${h}&sz=64`; }catch(e){ return ''; } }
+
+/* ---------- render ---------- */
+const main = document.getElementById('main');
+let filter = "";
+
+function render(){
+  document.body.setAttribute('data-theme', data.theme);
+  document.getElementById('themeBtn').textContent = data.theme==='dark' ? '🌙' : '☀️';
+  main.innerHTML = "";
+  const f = filter.trim().toLowerCase();
+  let shown = 0;
+  data.cats.forEach(cat=>{
+    const tools = cat.tools.filter(t => !f || (t.name+' '+(t.desc||'')+' '+t.url).toLowerCase().includes(f));
+    if(f && tools.length===0) return;
+    shown += tools.length;
+    const sec = document.createElement('section');
+    sec.className='cat'; sec.dataset.cat=cat.id;
+    sec.innerHTML = `
+      <div class="cat-head">
+        <span class="cat-handle" draggable="true" title="ドラッグでカテゴリ並び替え">⠿</span>
+        <span class="cat-title"><span class="cat-emoji">${cat.emoji||'📁'}</span>${escapeHtml(cat.name)}</span>
+        <span class="cat-count">${tools.length}</span>
+        <span class="cat-actions">
+          <button class="ic-btn" data-act="editcat" title="編集">✎</button>
+        </span>
+      </div>
+      <div class="grid" data-cat="${cat.id}"></div>`;
+    const grid = sec.querySelector('.grid');
+    tools.forEach(t=> grid.appendChild(cardEl(t, cat.id)));
+    // add card
+    const add = document.createElement('div');
+    add.className='card add-card';
+    add.innerHTML = `＋ ツール追加`;
+    add.onclick = ()=> openTool(null, cat.id);
+    grid.appendChild(add);
+    main.appendChild(sec);
+    setupGridDnD(grid, cat.id);
+    setupCatDnD(sec, cat.id);
+  });
+  if(f && shown===0){ main.innerHTML = `<div class="empty">「${escapeHtml(filter)}」に一致するツールはありません</div>`; }
+}
+
+function cardEl(t, catId){
+  const el = document.createElement('div');
+  el.className='card'; el.draggable=true; el.dataset.id=t.id; el.dataset.cat=catId;
+  const ic = t.icon ? `<div class="icon">${t.icon}</div>`
+    : `<div class="icon"><img src="${favicon(t.url)}" onerror="this.parentNode.textContent='🔗'"></div>`;
+  el.innerHTML = `
+    <div class="card-tools">
+      <span class="ic-btn" data-act="edit" title="編集">✎</span>
+    </div>
+    <div class="card-top">${ic}<div class="card-name">${escapeHtml(t.name)}</div></div>
+    ${t.desc?`<div class="card-desc">${escapeHtml(t.desc)}</div>`:''}
+    ${host(t.url)?`<div class="card-host">🔗 ${escapeHtml(host(t.url))}</div>`:''}`;
+  el.onclick = (e)=>{
+    if(e.target.dataset.act==='edit'){ openTool(t.id, catId); return; }
+    if(t.url) window.open(t.url, '_blank');
+  };
+  return el;
+}
+function escapeHtml(s){ return (s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+/* ---------- drag & drop: cards ---------- */
+let dragId=null, dragFromCat=null;
+function setupGridDnD(grid, catId){
+  grid.addEventListener('dragover', e=>{
+    if(!dragId) return; e.preventDefault();
+    grid.classList.add('dragover');
+    const after = afterEl(grid, e.clientX, e.clientY);
+    const dragging = document.querySelector('.card.dragging');
+    if(!dragging) return;
+    const addCard = grid.querySelector('.add-card');
+    if(after==null) grid.insertBefore(dragging, addCard);
+    else grid.insertBefore(dragging, after);
+  });
+  grid.addEventListener('dragleave', ()=> grid.classList.remove('dragover'));
+  grid.addEventListener('drop', e=>{
+    e.preventDefault(); grid.classList.remove('dragover');
+    if(!dragId) return;
+    commitCardOrder();
+  });
+}
+function afterEl(grid, x, y){
+  const cards=[...grid.querySelectorAll('.card:not(.dragging):not(.add-card)')];
+  let closest=null, dist=Infinity;
+  cards.forEach(c=>{ const r=c.getBoundingClientRect(); const cx=r.left+r.width/2, cy=r.top+r.height/2;
+    const d=Math.hypot(x-cx,y-cy); if(d<dist && (y<cy || (Math.abs(y-cy)<r.height/2 && x<cx))){ dist=d; closest=c; } });
+  return closest;
+}
+document.addEventListener('dragstart', e=>{
+  const card=e.target.closest('.card:not(.add-card)');
+  if(card){ dragId=card.dataset.id; dragFromCat=card.dataset.cat; card.classList.add('dragging'); }
+});
+document.addEventListener('dragend', e=>{
+  const card=e.target.closest('.card'); if(card) card.classList.remove('dragging');
+  dragId=null; dragFromCat=null;
+  document.querySelectorAll('.grid.dragover').forEach(g=>g.classList.remove('dragover'));
+});
+function commitCardOrder(){
+  // rebuild data order from DOM
+  const newCats = data.cats.map(c=>({...c, tools:[]}));
+  document.querySelectorAll('.grid').forEach(grid=>{
+    const catId=grid.dataset.cat;
+    const target=newCats.find(c=>c.id===catId);
+    grid.querySelectorAll('.card:not(.add-card)').forEach(card=>{
+      const t=findTool(card.dataset.id); if(t&&target) target.tools.push(t);
+    });
+  });
+  // keep tools that were filtered out (search active)
+  if(filter.trim()){
+    data.cats.forEach(old=>{
+      const nc=newCats.find(c=>c.id===old.id); if(!nc) return;
+      old.tools.forEach(t=>{ if(!nc.tools.find(x=>x.id===t.id)) nc.tools.push(t); });
+    });
+  }
+  data.cats=newCats; save(); render();
+}
+function findTool(id){ for(const c of data.cats){ const t=c.tools.find(x=>x.id===id); if(t) return t; } return null; }
+
+/* ---------- drag & drop: categories ---------- */
+let dragCat=null;
+function setupCatDnD(sec, catId){
+  const handle=sec.querySelector('.cat-handle');
+  handle.addEventListener('dragstart', e=>{ dragCat=catId; e.stopPropagation(); sec.style.opacity='.4'; });
+  handle.addEventListener('dragend', ()=>{ dragCat=null; sec.style.opacity=''; });
+  sec.addEventListener('dragover', e=>{
+    if(!dragCat || dragCat===catId) return; e.preventDefault();
+  });
+  sec.addEventListener('drop', e=>{
+    if(!dragCat || dragCat===catId) return; e.preventDefault();
+    const from=data.cats.findIndex(c=>c.id===dragCat);
+    const to=data.cats.findIndex(c=>c.id===catId);
+    const [m]=data.cats.splice(from,1); data.cats.splice(to,0,m);
+    save(); render();
+  });
+}
+
+/* ---------- tool modal ---------- */
+let editingTool=null, editingToolCat=null;
+const toolOv=document.getElementById('toolOv');
+function openTool(id, catId){
+  editingTool=id; editingToolCat=catId;
+  const sel=document.getElementById('t_cat'); sel.innerHTML='';
+  data.cats.forEach(c=> sel.add(new Option(`${c.emoji} ${c.name}`, c.id)));
+  document.getElementById('emojiPick').innerHTML = EMOJIS.map(e=>`<span>${e}</span>`).join('');
+  document.querySelectorAll('#emojiPick span').forEach(s=> s.onclick=()=>document.getElementById('t_icon').value=s.textContent);
+  if(id){
+    const t=findTool(id);
+    document.getElementById('toolTitle').textContent='ツールを編集';
+    document.getElementById('t_name').value=t.name;
+    document.getElementById('t_url').value=t.url;
+    document.getElementById('t_desc').value=t.desc||'';
+    document.getElementById('t_icon').value=t.icon||'';
+    sel.value=catId;
+    document.getElementById('t_delete').style.display='block';
+  }else{
+    document.getElementById('toolTitle').textContent='ツールを追加';
+    ['t_name','t_url','t_desc','t_icon'].forEach(i=>document.getElementById(i).value='');
+    sel.value=catId||data.cats[0]?.id;
+    document.getElementById('t_delete').style.display='none';
+  }
+  toolOv.classList.add('show');
+  setTimeout(()=>document.getElementById('t_name').focus(),50);
+}
+document.getElementById('t_cancel').onclick=()=>toolOv.classList.remove('show');
+document.getElementById('t_save').onclick=()=>{
+  const name=document.getElementById('t_name').value.trim();
+  let url=document.getElementById('t_url').value.trim();
+  if(!name){ toast('名前を入力してください'); return; }
+  if(url && !/^https?:\/\//i.test(url) && !url.startsWith('/')) url='https://'+url;
+  const desc=document.getElementById('t_desc').value.trim();
+  const icon=document.getElementById('t_icon').value.trim();
+  const newCat=document.getElementById('t_cat').value;
+  if(editingTool){
+    const t=findTool(editingTool);
+    Object.assign(t,{name,url,desc,icon});
+    if(newCat!==editingToolCat){
+      const oc=data.cats.find(c=>c.id===editingToolCat); oc.tools=oc.tools.filter(x=>x.id!==t.id);
+      data.cats.find(c=>c.id===newCat).tools.push(t);
+    }
+  }else{
+    data.cats.find(c=>c.id===newCat).tools.push({id:uid(),name,url,desc,icon});
+  }
+  save(); render(); toolOv.classList.remove('show'); toast('保存しました');
+};
+document.getElementById('t_delete').onclick=()=>{
+  if(!confirm('このツールを削除しますか？')) return;
+  const oc=data.cats.find(c=>c.id===editingToolCat); oc.tools=oc.tools.filter(x=>x.id!==editingTool);
+  save(); render(); toolOv.classList.remove('show'); toast('削除しました');
+};
+
+/* ---------- category modal ---------- */
+let editingCat=null;
+const catOv=document.getElementById('catOv');
+function openCat(id){
+  editingCat=id;
+  document.getElementById('catEmojiPick').innerHTML = EMOJIS.map(e=>`<span>${e}</span>`).join('');
+  document.querySelectorAll('#catEmojiPick span').forEach(s=> s.onclick=()=>document.getElementById('c_emoji').value=s.textContent);
+  if(id){
+    const c=data.cats.find(x=>x.id===id);
+    document.getElementById('catTitle').textContent='カテゴリを編集';
+    document.getElementById('c_emoji').value=c.emoji||'';
+    document.getElementById('c_name').value=c.name;
+    document.getElementById('c_delete').style.display='block';
+  }else{
+    document.getElementById('catTitle').textContent='カテゴリを追加';
+    document.getElementById('c_emoji').value='📁';
+    document.getElementById('c_name').value='';
+    document.getElementById('c_delete').style.display='none';
+  }
+  catOv.classList.add('show');
+  setTimeout(()=>document.getElementById('c_name').focus(),50);
+}
+document.getElementById('addCatBtn').onclick=()=>openCat(null);
+document.getElementById('c_cancel').onclick=()=>catOv.classList.remove('show');
+document.getElementById('c_save').onclick=()=>{
+  const name=document.getElementById('c_name').value.trim();
+  const emoji=document.getElementById('c_emoji').value.trim()||'📁';
+  if(!name){ toast('カテゴリ名を入力してください'); return; }
+  if(editingCat){ const c=data.cats.find(x=>x.id===editingCat); c.name=name; c.emoji=emoji; }
+  else data.cats.push({id:uid(),emoji,name,tools:[]});
+  save(); render(); catOv.classList.remove('show'); toast('保存しました');
+};
+document.getElementById('c_delete').onclick=()=>{
+  const c=data.cats.find(x=>x.id===editingCat);
+  if(c.tools.length && !confirm(`「${c.name}」内の${c.tools.length}件のツールも削除されます。よろしいですか？`)) return;
+  if(!c.tools.length && !confirm('このカテゴリを削除しますか？')) return;
+  data.cats=data.cats.filter(x=>x.id!==editingCat);
+  save(); render(); catOv.classList.remove('show'); toast('削除しました');
+};
+
+/* edit category via header button (delegated) */
+main.addEventListener('click', e=>{
+  const b=e.target.closest('[data-act="editcat"]'); if(!b) return;
+  openCat(b.closest('.cat').dataset.cat);
+});
+
+/* ---------- header actions ---------- */
+document.getElementById('search').oninput=e=>{ filter=e.target.value; render(); };
+document.getElementById('themeBtn').onclick=()=>{ data.theme=data.theme==='dark'?'light':'dark'; save(); render(); };
+document.getElementById('exportBtn').onclick=()=>{
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+  a.download='tool-portal-backup.json'; a.click(); toast('バックアップを書き出しました');
+};
+document.getElementById('importBtn').onclick=()=>document.getElementById('importFile').click();
+document.getElementById('importFile').onchange=e=>{
+  const f=e.target.files[0]; if(!f) return;
+  const r=new FileReader(); r.onload=()=>{ try{ const v=JSON.parse(r.result);
+    if(v.cats){ if(confirm('現在の内容を読み込んだ内容で置き換えます。よろしいですか？')){ data=v; save(); render(); toast('復元しました'); } } }
+    catch(err){ toast('読み込みに失敗しました'); } };
+  r.readAsText(f); e.target.value='';
+};
+document.querySelectorAll('.ov').forEach(ov=> ov.onclick=e=>{ if(e.target===ov) ov.classList.remove('show'); });
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') document.querySelectorAll('.ov.show').forEach(o=>o.classList.remove('show')); });
+
+render();
+</script>
+</body>
+</html>
