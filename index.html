@@ -3,20 +3,22 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#f3f5f9">
+<meta name="description" content="林材木店の自作ツール＆よく使うリンクを一画面に集約したランチャー">
 <title>マイ・ツールポータル</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='88'>🧰</text></svg>">
 <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%232f6bff'/><text x='50' y='52' font-size='62' text-anchor='middle' dominant-baseline='central'>🧰</text></svg>">
 <style>
   :root{
-    --bg:#0f1218; --panel:#171c26; --panel2:#1e2430; --line:#2a3140;
-    --text:#e8ecf3; --sub:#9aa6b8; --accent:#4f8cff; --accent2:#3b6fd4;
-    --danger:#ff5d6c; --ok:#33d39a; --chip:#222b3a;
-    --radius:14px; --shadow:0 6px 20px rgba(0,0,0,.35);
-  }
-  [data-theme="light"]{
     --bg:#f3f5f9; --panel:#ffffff; --panel2:#f7f9fc; --line:#e3e8f0;
     --text:#1b2330; --sub:#5d6b80; --accent:#2f6bff; --accent2:#2257d6;
-    --chip:#eef2f8; --shadow:0 6px 18px rgba(20,40,80,.10);
+    --danger:#e0475a; --ok:#1fae7f; --chip:#eef2f8;
+    --radius:14px; --shadow:0 6px 18px rgba(20,40,80,.10);
+  }
+  [data-theme="dark"]{
+    --bg:#0f1218; --panel:#171c26; --panel2:#1e2430; --line:#2a3140;
+    --text:#e8ecf3; --sub:#9aa6b8; --accent:#4f8cff; --accent2:#3b6fd4;
+    --danger:#ff5d6c; --ok:#33d39a; --chip:#222b3a; --shadow:0 6px 20px rgba(0,0,0,.35);
   }
   *{box-sizing:border-box}
   body{margin:0;font-family:"Segoe UI","Hiragino Kaku Gothic ProN","Meiryo",system-ui,sans-serif;
@@ -144,7 +146,7 @@
 
 <script>
 const LS_KEY = "tool_portal_v1";
-const SEED_VERSION = 3; // 既存データへ新ツール追加/不要ツール除去を一度だけ反映する版数
+const SEED_VERSION = 4; // 既存データへ新ツール追加/不要ツール除去を一度だけ反映する版数
 // 一度だけ自動削除する（プライベート系・旅行おでかけは登録しない方針）
 const REMOVED_URLS = [
   "https://h02050d-ship-it.github.io/miracosta-dashboard/",
@@ -165,6 +167,7 @@ const DEFAULT = {
       {id:uid(), name:"納品書作成", url:"https://h02050d-ship-it.github.io/nouhinsho/", desc:"納品書を作成・PDF化", icon:"📦"},
       {id:uid(), name:"運賃計算ツール", url:"https://h02050d-ship-it.github.io/fare-calculator/", desc:"商品＋送料を自動計算", icon:"🧮"},
       {id:uid(), name:"加工予定表", url:"https://h02050d-ship-it.github.io/kakou-yotei/", desc:"加工場の予定を管理", icon:"🗓️"},
+      {id:uid(), name:"現場作業ボード", url:"https://h02050d-ship-it.github.io/genba-board/", desc:"日次割振り・ノルマ・将来シミュレーション", icon:"📝"},
       {id:uid(), name:"現場呼出（LINE）", url:"https://h02050d-ship-it.github.io/genba-call/", desc:"加工場へLINEで呼出通知", icon:"📞"},
       {id:uid(), name:"林材木店 HP", url:"https://hayazai.com/", desc:"自社ホームページ", icon:"🌲"},
     ]},
@@ -219,7 +222,8 @@ function load(){
   return v;
 }
 function save(){ localStorage.setItem(LS_KEY, JSON.stringify(data)); }
-function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),1600); }
+let toastTimer=null;
+function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.classList.remove('show'),1600); }
 function host(url){ try{ return new URL(url).hostname.replace('www.',''); }catch(e){ return ''; } }
 function favicon(url){ try{ const h=new URL(url).hostname; return `https://www.google.com/s2/favicons?domain=${h}&sz=64`; }catch(e){ return ''; } }
 
@@ -242,7 +246,7 @@ function render(){
     sec.innerHTML = `
       <div class="cat-head">
         <span class="cat-handle" draggable="true" title="ドラッグでカテゴリ並び替え">⠿</span>
-        <span class="cat-title"><span class="cat-emoji">${cat.emoji||'📁'}</span>${escapeHtml(cat.name)}</span>
+        <span class="cat-title"><span class="cat-emoji">${escapeHtml(cat.emoji)||'📁'}</span>${escapeHtml(cat.name)}</span>
         <span class="cat-count">${tools.length}</span>
         <span class="cat-actions">
           <button class="ic-btn" data-act="editcat" title="編集">✎</button>
@@ -266,9 +270,9 @@ function render(){
 
 function cardEl(t, catId){
   const el = document.createElement('div');
-  el.className='card'; el.draggable=true; el.dataset.id=t.id; el.dataset.cat=catId;
+  el.className='card'; el.draggable=!filter.trim(); el.dataset.id=t.id; el.dataset.cat=catId;
   el.title = (t.desc? t.desc+'\n':'') + (t.url||'');
-  const ic = t.icon ? `<div class="icon">${t.icon}</div>`
+  const ic = t.icon ? `<div class="icon">${escapeHtml(t.icon)}</div>`
     : `<div class="icon"><img src="${favicon(t.url)}" onerror="this.parentNode.textContent='🔗'"></div>`;
   el.innerHTML = `
     <div class="card-tools">
@@ -277,8 +281,9 @@ function cardEl(t, catId){
     ${ic}<div class="card-name">${escapeHtml(t.name)}</div>`;
   el.onclick = (e)=>{
     if(e.target.dataset.act==='edit'){ openTool(t.id, catId); return; }
-    if(t.url) window.open(t.url, '_blank');
+    if(t.url) window.open(t.url, '_blank', 'noopener');
   };
+  el.onauxclick = (e)=>{ if(e.button===1 && t.url) window.open(t.url, '_blank', 'noopener'); };
   return el;
 }
 function escapeHtml(s){ return (s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
@@ -464,7 +469,7 @@ document.getElementById('themeBtn').onclick=()=>{ data.theme=data.theme==='dark'
 document.getElementById('exportBtn').onclick=()=>{
   const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
   const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
-  a.download='tool-portal-backup.json'; a.click(); toast('バックアップを書き出しました');
+  a.download='tool-portal-backup-'+new Date().toISOString().slice(0,10)+'.json'; a.click(); toast('バックアップを書き出しました');
 };
 document.getElementById('importBtn').onclick=()=>document.getElementById('importFile').click();
 document.getElementById('importFile').onchange=e=>{
@@ -475,7 +480,18 @@ document.getElementById('importFile').onchange=e=>{
   r.readAsText(f); e.target.value='';
 };
 document.querySelectorAll('.ov').forEach(ov=> ov.onclick=e=>{ if(e.target===ov) ov.classList.remove('show'); });
-document.addEventListener('keydown', e=>{ if(e.key==='Escape') document.querySelectorAll('.ov.show').forEach(o=>o.classList.remove('show')); });
+document.addEventListener('keydown', e=>{
+  if(e.key==='Escape'){ document.querySelectorAll('.ov.show').forEach(o=>o.classList.remove('show')); return; }
+  // モーダル内でEnter → 保存（textarea除く）
+  if(e.key==='Enter' && e.target.tagName==='INPUT'){
+    if(toolOv.classList.contains('show')){ e.preventDefault(); document.getElementById('t_save').click(); }
+    else if(catOv.classList.contains('show')){ e.preventDefault(); document.getElementById('c_save').click(); }
+  }
+  // どこでも「/」で検索へ
+  if(e.key==='/' && !['INPUT','SELECT','TEXTAREA'].includes(e.target.tagName)){
+    e.preventDefault(); document.getElementById('search').focus();
+  }
+});
 
 render();
 </script>
