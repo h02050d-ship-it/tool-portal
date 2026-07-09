@@ -6,8 +6,8 @@
 <meta name="theme-color" content="#f3f5f9">
 <meta name="description" content="林材木店の自作ツール＆よく使うリンクを一画面に集約したランチャー">
 <title>マイ・ツールポータル</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='88'>🧰</text></svg>">
-<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%232f6bff'/><text x='50' y='52' font-size='62' text-anchor='middle' dominant-baseline='central'>🧰</text></svg>">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='18' fill='%2300acc1'/><text x='50' y='50' font-size='72' font-weight='bold' text-anchor='middle' dominant-baseline='central' fill='white' font-family='sans-serif'>ポ</text></svg>">
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%2300acc1'/><text x='50' y='50' font-size='62' font-weight='bold' text-anchor='middle' dominant-baseline='central' fill='white' font-family='sans-serif'>ポ</text></svg>">
 <style>
   :root{
     --bg:#f3f5f9; --panel:#ffffff; --panel2:#f7f9fc; --line:#e3e8f0;
@@ -57,8 +57,9 @@
     font-size:17px;background:var(--panel2);border:1px solid var(--line);overflow:hidden}
   .icon img{width:100%;height:100%;object-fit:cover}
   .card-name{font-size:13px;font-weight:700;line-height:1.2;word-break:break-word}
-  .card-tools{position:absolute;top:4px;right:4px;display:flex;gap:4px;opacity:0;transition:.15s}
-  .card:hover .card-tools{opacity:1}
+  .card-tools{position:absolute;top:4px;right:4px;display:flex;gap:4px;opacity:0;transition:.15s;pointer-events:none}
+  .card:hover .card-tools{opacity:1;pointer-events:auto}
+  @media(hover:none){.card-tools{opacity:.6;pointer-events:auto}}
   .ic-btn{width:22px;height:22px;border-radius:6px;border:1px solid var(--line);background:var(--panel2);
     display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:12px;color:var(--sub)}
   .ic-btn:hover{color:var(--text);border-color:var(--accent)}
@@ -199,7 +200,7 @@ function load(){
   try{ v = JSON.parse(localStorage.getItem(LS_KEY)); }catch(e){}
   if(!v || !v.cats) return JSON.parse(JSON.stringify(DEFAULT));
   // 既存データに、まだ無い新ツールだけを一度だけ追加（URLで重複判定／削除済みは復活させない）
-  if(v.seedVersion !== SEED_VERSION){
+  if(v.seedVersion !== SEED_VERSION){ try{
     const existingUrls = new Set();
     v.cats.forEach(c=> c.tools.forEach(t=> existingUrls.add((t.url||'').replace(/\/$/,''))));
     DEFAULT.cats.forEach(dc=>{
@@ -218,7 +219,7 @@ function load(){
     v.cats = v.cats.filter(c=> !(REMOVED_CATS.includes(c.name) && c.tools.length===0));
     v.seedVersion = SEED_VERSION;
     localStorage.setItem(LS_KEY, JSON.stringify(v));
-  }
+  }catch(e){} }
   return v;
 }
 function save(){ localStorage.setItem(LS_KEY, JSON.stringify(data)); }
@@ -273,7 +274,7 @@ function cardEl(t, catId){
   el.className='card'; el.draggable=!filter.trim(); el.dataset.id=t.id; el.dataset.cat=catId;
   el.title = (t.desc? t.desc+'\n':'') + (t.url||'');
   const ic = t.icon ? `<div class="icon">${escapeHtml(t.icon)}</div>`
-    : `<div class="icon"><img src="${favicon(t.url)}" onerror="this.parentNode.textContent='🔗'"></div>`;
+    : `<div class="icon"><img draggable="false" src="${favicon(t.url)}" onerror="this.parentNode.textContent='🔗'"></div>`;
   el.innerHTML = `
     <div class="card-tools">
       <span class="ic-btn" data-act="edit" title="編集">✎</span>
@@ -323,6 +324,7 @@ document.addEventListener('dragend', e=>{
   const card=e.target.closest('.card'); if(card) card.classList.remove('dragging');
   dragId=null; dragFromCat=null;
   document.querySelectorAll('.grid.dragover').forEach(g=>g.classList.remove('dragover'));
+  render();
 });
 function commitCardOrder(){
   // rebuild data order from DOM
@@ -469,13 +471,17 @@ document.getElementById('themeBtn').onclick=()=>{ data.theme=data.theme==='dark'
 document.getElementById('exportBtn').onclick=()=>{
   const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
   const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
-  a.download='tool-portal-backup-'+new Date().toISOString().slice(0,10)+'.json'; a.click(); toast('バックアップを書き出しました');
+  const d=new Date(); const ymd=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  a.download='tool-portal-backup-'+ymd+'.json'; a.click(); toast('バックアップを書き出しました');
 };
 document.getElementById('importBtn').onclick=()=>document.getElementById('importFile').click();
 document.getElementById('importFile').onchange=e=>{
   const f=e.target.files[0]; if(!f) return;
   const r=new FileReader(); r.onload=()=>{ try{ const v=JSON.parse(r.result);
-    if(v.cats){ if(confirm('現在の内容を読み込んだ内容で置き換えます。よろしいですか？')){ data=v; save(); render(); toast('復元しました'); } } }
+    if(!v || !Array.isArray(v.cats)){ toast('読み込みに失敗しました'); return; }
+    v.cats=v.cats.filter(c=> c && typeof c==='object' && !Array.isArray(c));
+    v.cats.forEach(c=>{ if(!Array.isArray(c.tools)) c.tools=[]; });
+    if(confirm('現在の内容を読み込んだ内容で置き換えます。よろしいですか？')){ data=v; save(); render(); toast('復元しました'); } }
     catch(err){ toast('読み込みに失敗しました'); } };
   r.readAsText(f); e.target.value='';
 };
