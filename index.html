@@ -147,7 +147,7 @@
 
 <script>
 const LS_KEY = "tool_portal_v1";
-const SEED_VERSION = 4; // 既存データへ新ツール追加/不要ツール除去を一度だけ反映する版数
+const SEED_VERSION = 5; // 既存データへ新ツール追加/不要ツール除去を一度だけ反映する版数
 // 一度だけ自動削除する（プライベート系・旅行おでかけは登録しない方針）
 const REMOVED_URLS = [
   "https://h02050d-ship-it.github.io/miracosta-dashboard/",
@@ -164,6 +164,7 @@ const DEFAULT = {
     {id:uid(), emoji:"🌲", name:"林材木店・仕事", tools:[
       {id:uid(), name:"売れ行き＆在庫ボード", url:"https://h02050d-ship-it.github.io/salesboard/", desc:"EC在庫を見やすく・双方向同期", icon:"📊"},
       {id:uid(), name:"受注・問い合わせ管理", url:"https://h02050d-ship-it.github.io/order-desk/", desc:"楽天/ヤフーの受注・問い合わせ", icon:"🛒"},
+      {id:uid(), name:"西濃送り状デスク", url:"https://h02050d-ship-it.github.io/seino-desk/", desc:"送り状の単体発行（市場/電話/持込）", icon:"🚚"},
       {id:uid(), name:"見積書作成", url:"https://h02050d-ship-it.github.io/fare-calculator/mitsumori.html", desc:"商品＋送料で見積書を自動作成", icon:"🧾"},
       {id:uid(), name:"納品書作成", url:"https://h02050d-ship-it.github.io/nouhinsho/", desc:"納品書を作成・PDF化", icon:"📦"},
       {id:uid(), name:"運賃計算ツール", url:"https://h02050d-ship-it.github.io/fare-calculator/", desc:"商品＋送料を自動計算", icon:"🧮"},
