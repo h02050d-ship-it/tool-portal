@@ -4,10 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#f3f5f9">
-<meta name="description" content="林材木店の自作ツール＆よく使うリンクを一画面に集約したランチャー">
-<title>マイ・ツールポータル</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='18' fill='%2300acc1'/><text x='50' y='50' font-size='72' font-weight='bold' text-anchor='middle' dominant-baseline='central' fill='white' font-family='sans-serif'>ポ</text></svg>">
-<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%2300acc1'/><text x='50' y='50' font-size='62' font-weight='bold' text-anchor='middle' dominant-baseline='central' fill='white' font-family='sans-serif'>ポ</text></svg>">
+<meta name="description" content="林材木店の自作業務ツールを一画面に集約した社内ツール集">
+<title>林材木店 社内ツール集</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='18' fill='%2300acc1'/><text x='50' y='50' font-size='72' font-weight='bold' text-anchor='middle' dominant-baseline='central' fill='white' font-family='sans-serif'>ツ</text></svg>">
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%2300acc1'/><text x='50' y='50' font-size='62' font-weight='bold' text-anchor='middle' dominant-baseline='central' fill='white' font-family='sans-serif'>ツ</text></svg>">
 <style>
   :root{
     --bg:#f3f5f9; --panel:#ffffff; --panel2:#f7f9fc; --line:#e3e8f0;
@@ -46,17 +46,19 @@
   .cat-count{font-size:11px;color:var(--sub);background:var(--chip);padding:1px 8px;border-radius:999px}
   .cat-actions{margin-left:auto;display:flex;gap:6px;opacity:.55;transition:.15s}
   .cat:hover .cat-actions{opacity:1}
-  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:9px;min-height:48px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:9px;min-height:48px}
   .grid.dragover{outline:2px dashed var(--accent);outline-offset:5px;border-radius:10px}
   .card{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:10px;
-    padding:10px 11px;cursor:pointer;transition:.12s;display:flex;align-items:center;gap:9px;
-    box-shadow:var(--shadow);overflow:hidden;min-height:52px}
+    padding:10px 11px;cursor:pointer;transition:.12s;display:flex;align-items:flex-start;gap:9px;
+    box-shadow:var(--shadow);overflow:hidden;min-height:58px}
   .card:hover{transform:translateY(-2px);border-color:var(--accent)}
   .card.dragging{opacity:.4}
   .icon{width:30px;height:30px;border-radius:8px;flex:0 0 auto;display:flex;align-items:center;justify-content:center;
     font-size:17px;background:var(--panel2);border:1px solid var(--line);overflow:hidden}
   .icon img{width:100%;height:100%;object-fit:cover}
-  .card-name{font-size:13px;font-weight:700;line-height:1.2;word-break:break-word}
+  .card-body{min-width:0}
+  .card-name{font-size:13px;font-weight:700;line-height:1.25;word-break:break-word}
+  .card-desc{font-size:11.5px;color:var(--sub);line-height:1.35;margin-top:3px;word-break:break-word}
   .card-tools{position:absolute;top:4px;right:4px;display:flex;gap:4px;opacity:0;transition:.15s;pointer-events:none}
   .card:hover .card-tools{opacity:1;pointer-events:auto}
   @media(hover:none){.card-tools{opacity:.6;pointer-events:auto}}
@@ -94,7 +96,7 @@
 </head>
 <body>
 <header>
-  <div class="brand"><span class="dot"></span>マイ・ツールポータル</div>
+  <div class="brand"><span class="dot"></span>林材木店 社内ツール集</div>
   <div class="search">
     🔍<input id="search" placeholder="ツール名・説明で検索…" autocomplete="off">
   </div>
@@ -110,10 +112,10 @@
 <div class="ov" id="toolOv">
   <div class="modal">
     <h3 id="toolTitle">ツールを追加</h3>
-    <div class="field"><label>名前</label><input id="t_name" placeholder="例：育児記録アプリ"></div>
+    <div class="field"><label>名前</label><input id="t_name" placeholder="例：見積書作成ツール"></div>
     <div class="field"><label>URL / リンク</label><input id="t_url" placeholder="https://… / ドライブのリンク"></div>
     <div class="hint">GoogleドライブのフォルダやファイルのURLもそのまま貼れます。</div>
-    <div class="field"><label>説明（任意）</label><input id="t_desc" placeholder="例：ミルク・離乳食を夫婦で同期"></div>
+    <div class="field"><label>説明（任意）</label><input id="t_desc" placeholder="例：商品＋送料で見積書を自動作成"></div>
     <div class="field"><label>カテゴリ</label><select id="t_cat"></select></div>
     <div class="field"><label>アイコン（絵文字、空欄ならサイトのアイコン自動）</label>
       <input id="t_icon" placeholder="例：🍼" maxlength="4">
@@ -147,15 +149,18 @@
 
 <script>
 const LS_KEY = "tool_portal_v1";
-const SEED_VERSION = 5; // 既存データへ新ツール追加/不要ツール除去を一度だけ反映する版数
-// 一度だけ自動削除する（プライベート系・旅行おでかけは登録しない方針）
+const SEED_VERSION = 6; // 既存データへ新ツール追加/不要ツール除去を一度だけ反映する版数
+// 一度だけ自動削除する（プライベート系・個人向けは登録しない方針。よく使うリンクは廃止）
 const REMOVED_URLS = [
   "https://h02050d-ship-it.github.io/miracosta-dashboard/",
   "https://h02050d-ship-it.github.io/kawaji-hotel/",
+  "https://h02050d-ship-it.github.io/baby-log/",
+  "https://drive.google.com/",
+  "https://mail.google.com/",
 ];
-const REMOVED_CATS = ["旅行・おでかけ"];
+const REMOVED_CATS = ["旅行・おでかけ","暮らし・家族","よく使うリンク"];
 const uid = () => Math.random().toString(36).slice(2,9);
-const EMOJIS = ["🍼","📊","💰","📦","🚚","📝","🌲","📷","📧","✅","📁","🔗","🧮","📈","🛒","🏢","⚙️","🤖","🧾","📞","💡","🔔","🗂️","🌐","🏰","🏨","🔪","🗓️"];
+const EMOJIS = ["📊","💰","📦","🚚","📝","🌲","📷","📧","✅","📁","🔗","🧮","📈","🛒","🏢","⚙️","🤖","🧾","📞","💡","🔔","🗂️","🌐","🔪","🗓️","🧹","📖","📠"];
 
 const DEFAULT = {
   theme:"light",
@@ -171,6 +176,7 @@ const DEFAULT = {
       {id:uid(), name:"加工予定表", url:"https://h02050d-ship-it.github.io/kakou-yotei/", desc:"加工場の予定を管理", icon:"🗓️"},
       {id:uid(), name:"現場作業ボード", url:"https://h02050d-ship-it.github.io/genba-board/", desc:"日次割振り・ノルマ・将来シミュレーション", icon:"📝"},
       {id:uid(), name:"現場呼出（LINE）", url:"https://h02050d-ship-it.github.io/genba-call/", desc:"加工場へLINEで呼出通知", icon:"📞"},
+      {id:uid(), name:"FAXデスク", url:"https://h02050d-ship-it.github.io/fax-desk/", desc:"メール感覚でFAX送信・受信FAXの要返信管理", icon:"📠"},
       {id:uid(), name:"林材木店 HP", url:"https://hayazai.com/", desc:"自社ホームページ", icon:"🌲"},
     ]},
     {id:uid(), emoji:"📊", name:"経営・書類", tools:[
@@ -180,16 +186,11 @@ const DEFAULT = {
     {id:uid(), emoji:"⚙️", name:"生産・設備", tools:[
       {id:uid(), name:"モルダー刃物 使用量管理", url:"https://h02050d-ship-it.github.io/molder-hamono/", desc:"刃物の使用量を管理", icon:"🔪"},
       {id:uid(), name:"モルダー軸位置管理", url:"https://h02050d-ship-it.github.io/molder/", desc:"モルダー軸位置の記録", icon:"⚙️"},
+      {id:uid(), name:"工場清掃ボード", url:"https://h02050d-ship-it.github.io/seiso/", desc:"今日やる清掃が自動で並ぶ・チェックで次回期日を自動計算", icon:"🧹"},
     ]},
     {id:uid(), emoji:"✅", name:"管理・タスク", tools:[
       {id:uid(), name:"会社タスク管理", url:"https://h02050d-ship-it.github.io/task-manager/", desc:"会社全体のタスク管理", icon:"✅"},
-    ]},
-    {id:uid(), emoji:"🏠", name:"暮らし・家族", tools:[
-      {id:uid(), name:"育児記録アプリ", url:"https://h02050d-ship-it.github.io/baby-log/", desc:"ミルク・離乳食を夫婦で同期", icon:"🍼"},
-    ]},
-    {id:uid(), emoji:"📁", name:"よく使うリンク", tools:[
-      {id:uid(), name:"Googleドライブ", url:"https://drive.google.com/", desc:"会社フォルダ 4.大樹 など", icon:"📁"},
-      {id:uid(), name:"Gmail", url:"https://mail.google.com/", desc:"", icon:"📧"},
+      {id:uid(), name:"社内ルールブック", url:"https://h02050d-ship-it.github.io/rulebook/", desc:"社内独自ルールを全員で共有・検索・編集", icon:"📖"},
     ]},
   ]
 };
@@ -280,7 +281,7 @@ function cardEl(t, catId){
     <div class="card-tools">
       <span class="ic-btn" data-act="edit" title="編集">✎</span>
     </div>
-    ${ic}<div class="card-name">${escapeHtml(t.name)}</div>`;
+    ${ic}<div class="card-body"><div class="card-name">${escapeHtml(t.name)}</div>${t.desc?`<div class="card-desc">${escapeHtml(t.desc)}</div>`:''}</div>`;
   el.onclick = (e)=>{
     if(e.target.dataset.act==='edit'){ openTool(t.id, catId); return; }
     if(t.url) window.open(t.url, '_blank', 'noopener');
