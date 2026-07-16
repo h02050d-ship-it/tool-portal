@@ -150,7 +150,7 @@
 
 <script>
 const LS_KEY = "tool_portal_v1";
-const SEED_VERSION = 7; // 既存データへ新ツール追加/不要ツール除去/説明文更新を一度だけ反映する版数
+const SEED_VERSION = 8; // 既存データへ新ツール追加/不要ツール除去/説明文更新を一度だけ反映する版数
 // 一度だけ自動削除する（プライベート系・個人向けは登録しない方針。よく使うリンクは廃止）
 const REMOVED_URLS = [
   "https://h02050d-ship-it.github.io/miracosta-dashboard/",
@@ -190,6 +190,7 @@ const DEFAULT = {
       {id:uid(), name:"工場清掃ボード", url:"https://h02050d-ship-it.github.io/seiso/", desc:"今日やる清掃が自動で並ぶ。チェックするだけで次回期日も自動計算", icon:"🧹"},
     ]},
     {id:uid(), emoji:"✅", name:"管理・タスク", tools:[
+      {id:uid(), name:"社内通知 設定", url:"https://h02050d-ship-it.github.io/notify-settings/", desc:"誰に・どの通知（現場呼出/タスク/保育園ほか）を送るか人ごとに管理。増えすぎたLINE通知を絞れる", icon:"📣"},
       {id:uid(), name:"会社タスク管理", url:"https://h02050d-ship-it.github.io/task-manager/", desc:"会社全体のタスクを全員で共有。やり忘れ・言った言わないを防ぐ", icon:"✅"},
       {id:uid(), name:"社内ルールブック", url:"https://h02050d-ship-it.github.io/rulebook/", desc:"「磐田市場は10束以下で送料2,000円」等の社内ルールをすぐ検索・全員で共有", icon:"📖"},
     ]},
