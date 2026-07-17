@@ -150,7 +150,7 @@
 
 <script>
 const LS_KEY = "tool_portal_v1";
-const SEED_VERSION = 10; // 既存データへ新ツール追加/不要ツール除去/説明文更新を一度だけ反映する版数
+const SEED_VERSION = 11; // 既存データへ新ツール追加/不要ツール除去/説明文更新を一度だけ反映する版数
 // 一度だけ自動削除する（プライベート系・個人向けは登録しない方針。よく使うリンクは廃止）
 const REMOVED_URLS = [
   "https://h02050d-ship-it.github.io/miracosta-dashboard/",
@@ -193,7 +193,10 @@ const DEFAULT = {
       {id:uid(), name:"社内通知 設定", url:"https://h02050d-ship-it.github.io/notify-settings/", desc:"誰に・どの通知（現場呼出/タスク/要返信メール/刃物交換ほか）を受け取るか人ごとに選べる。増えすぎたLINE通知を絞れる", icon:"📣"},
       {id:uid(), name:"会社タスク管理", url:"https://h02050d-ship-it.github.io/task-manager/", desc:"会社全体のタスクを全員で共有。やり忘れ・言った言わないを防ぐ", icon:"✅"},
       {id:uid(), name:"社内ルールブック", url:"https://h02050d-ship-it.github.io/rulebook/", desc:"「磐田市場は10束以下で送料2,000円」等の社内ルールをすぐ検索・全員で共有", icon:"📖"},
+    ]},    {id:uid(), emoji:"📦", name:"営業・市場", tools:[
+      {id:uid(), name:"市場向け 価格・在庫・見積ツール", url:"https://h02050d-ship-it.github.io/fare-calculator/ichiba/tool.html", desc:"市場さまが取引条件どおりの価格表・リアルタイム在庫・運賃込み見積をその場で確認でき、正式見積依頼・注文までワンタップで完了する", icon:"🏪"},
     ]},
+
   ]
 };
 
