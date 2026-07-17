@@ -150,7 +150,7 @@
 
 <script>
 const LS_KEY = "tool_portal_v1";
-const SEED_VERSION = 13; // 既存データへ新ツール追加/不要ツール除去/説明文更新を一度だけ反映する版数
+const SEED_VERSION = 14; // 既存データへ新ツール追加/不要ツール除去/説明文更新を一度だけ反映する版数
 // 一度だけ自動削除する（プライベート系・個人向けは登録しない方針。よく使うリンクは廃止）
 const REMOVED_URLS = [
   "https://h02050d-ship-it.github.io/miracosta-dashboard/",
@@ -181,6 +181,7 @@ const DEFAULT = {
       {id:uid(), name:"林材木店 HP", url:"https://hayazai.com/", desc:"自社ホームページ。製品情報・価格のご案内はここから", icon:"🌲"},
     ]},
     {id:uid(), emoji:"📊", name:"経営・書類", tools:[
+      {id:uid(), name:"在庫推定・適正在庫", url:"https://h02050d-ship-it.github.io/salesboard/tekisei.html", desc:"全社の在庫額を月次で推定し、原板の規格別に需給・スポット購入の目安を提示。仕入れ判断に使える", icon:"🎯"},
       {id:uid(), name:"経営日報", url:"https://h02050d-ship-it.github.io/keiei-nippou/", desc:"売上・資金繰り予測・顧客動向を毎朝1画面でチェックできる経営コックピット", icon:"📈"},
       {id:uid(), name:"書類自動保存ボード", url:"https://h02050d-ship-it.github.io/doc-board/", desc:"請求書・領収書が自動保存できているかひと目で確認。取りこぼしに気づける", icon:"🗂️"},
     ]},
