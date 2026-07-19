@@ -150,7 +150,7 @@
 
 <script>
 const LS_KEY = "tool_portal_v1";
-const SEED_VERSION = 15; // 既存データへ新ツール追加/不要ツール除去/説明文更新を一度だけ反映する版数
+const SEED_VERSION = 16; // 既存データへ新ツール追加/不要ツール除去/説明文更新を一度だけ反映する版数
 // 一度だけ自動削除する（プライベート系・個人向けは登録しない方針。よく使うリンクは廃止）
 const REMOVED_URLS = [
   "https://h02050d-ship-it.github.io/miracosta-dashboard/",
@@ -196,6 +196,7 @@ const DEFAULT = {
       {id:uid(), name:"会社タスク管理", url:"https://h02050d-ship-it.github.io/task-manager/", desc:"会社全体のタスクを全員で共有。やり忘れ・言った言わないを防ぐ", icon:"✅"},
       {id:uid(), name:"社内ルールブック", url:"https://h02050d-ship-it.github.io/rulebook/", desc:"「磐田市場は10束以下で送料2,000円」等の社内ルールをすぐ検索・全員で共有", icon:"📖"},
     ]},    {id:uid(), emoji:"📦", name:"営業・市場", tools:[
+      {id:uid(), name:"内藤運輸 配送実績Web", url:"https://h02050d-ship-it.github.io/naito-view/", desc:"内藤運輸への配送実績（束数）を直近1ヶ月ぶんWeb表示。毎月の請求束数の裏付けをFAXなしで共有・確認できる（合言葉naito0538）", icon:"🚚"},
       {id:uid(), name:"市場管理ボード", url:"https://h02050d-ship-it.github.io/ichiba-kanri/", desc:"市場ごとの売上・手数料率・預け在庫・滞留年数・不足在庫・内藤運賃を1画面で把握でき、AI取込の数字を書類と突合確認できる", icon:"🏬"},
       {id:uid(), name:"木取り判断ツール", url:"https://h02050d-ship-it.github.io/salesboard/kidori.html", desc:"4m原板を切るか丸のまま売るか、手間賃・需給・在庫から採算を判定。推奨切断量まで出る", icon:"🪚"},
       {id:uid(), name:"市場向け 価格・在庫・見積ツール", url:"https://h02050d-ship-it.github.io/fare-calculator/ichiba/tool.html", desc:"市場さまが取引条件どおりの価格表・リアルタイム在庫・運賃込み見積をその場で確認でき、正式見積依頼・注文までワンタップで完了する", icon:"🏪"},
