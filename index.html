@@ -150,7 +150,7 @@
 
 <script>
 const LS_KEY = "tool_portal_v1";
-const SEED_VERSION = 16; // 既存データへ新ツール追加/不要ツール除去/説明文更新を一度だけ反映する版数
+const SEED_VERSION = 17; // 既存データへ新ツール追加/不要ツール除去/説明文更新を一度だけ反映する版数
 // 一度だけ自動削除する（プライベート系・個人向けは登録しない方針。よく使うリンクは廃止）
 const REMOVED_URLS = [
   "https://h02050d-ship-it.github.io/miracosta-dashboard/",
@@ -186,7 +186,7 @@ const DEFAULT = {
       {id:uid(), name:"書類自動保存ボード", url:"https://h02050d-ship-it.github.io/doc-board/", desc:"請求書・領収書が自動保存できているかひと目で確認。取りこぼしに気づける", icon:"🗂️"},
     ]},
     {id:uid(), emoji:"⚙️", name:"生産・設備", tools:[
-      {id:uid(), name:"効率化ボード", url:"https://h02050d-ship-it.github.io/kaizen/", desc:"モルダー加工の割れ・埋木飛びを何枚中何枚か記録するだけで不良率が見える。原板仕分けの効果も比較でき、現場・事務のムダ改善リストも管理できる", icon:"📉"},
+      {id:uid(), name:"モルダー修正ボード", url:"https://h02050d-ship-it.github.io/kaizen/", desc:"モルダー加工のうち何枚が修正行きか記録するだけで修正率が見える。刃物管理の加工実績から2タップで入力でき、原板仕分けの効果比較や改善リストで改善に役立てられる", icon:"🪚"},
       {id:uid(), name:"モルダー刃物 使用量管理", url:"https://h02050d-ship-it.github.io/molder-hamono/", desc:"刃物の使用量を記録して、研磨・交換のタイミングを逃さない", icon:"🔪"},
       {id:uid(), name:"モルダー軸位置管理", url:"https://h02050d-ship-it.github.io/molder/", desc:"段取り替えの軸位置を記録。次に同じ製品を挽くときのセットが速くなる", icon:"⚙️"},
       {id:uid(), name:"工場清掃ボード", url:"https://h02050d-ship-it.github.io/seiso/", desc:"今日やる清掃が自動で並ぶ。チェックするだけで次回期日も自動計算", icon:"🧹"},
@@ -233,6 +233,9 @@ function load(){
     const descMap = new Map();
     DEFAULT.cats.forEach(dc=> dc.tools.forEach(dt=> descMap.set((dt.url||'').replace(/\/$/,''), dt.desc)));
     v.cats.forEach(c=> c.tools.forEach(t=>{ const d=descMap.get((t.url||'').replace(/\/$/,'')); if(d) t.desc=d; }));
+    // ツール改名を一度だけ反映（URL一致のみ。2026-07-17 効率化ボード→モルダー修正ボード）
+    const renameMap = new Map([["https://h02050d-ship-it.github.io/kaizen",{name:"モルダー修正ボード",icon:"🪚"}]]);
+    v.cats.forEach(c=> c.tools.forEach(t=>{ const r=renameMap.get((t.url||'').replace(/\/$/,'')); if(r){ t.name=r.name; t.icon=r.icon; } }));
     v.seedVersion = SEED_VERSION;
     localStorage.setItem(LS_KEY, JSON.stringify(v));
   }catch(e){} }
