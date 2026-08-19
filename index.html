@@ -150,7 +150,7 @@
 
 <script>
 const LS_KEY = "tool_portal_v1";
-const SEED_VERSION = 25; // 既存データへ新ツール追加/不要ツール除去/説明文更新を一度だけ反映する版数
+const SEED_VERSION = 26; // 既存データへ新ツール追加/不要ツール除去/説明文更新を一度だけ反映する版数
 // 一度だけ自動削除する（プライベート系・個人向けは登録しない方針。よく使うリンクは廃止）
 const REMOVED_URLS = [
   "https://h02050d-ship-it.github.io/miracosta-dashboard/",
@@ -195,6 +195,7 @@ const DEFAULT = {
       {id:uid(), name:"工場清掃ボード", url:"https://h02050d-ship-it.github.io/seiso/", desc:"今日やる清掃が自動で並ぶ。チェックするだけで次回期日も自動計算", icon:"🧹"},
     ]},
     {id:uid(), emoji:"✅", name:"管理・タスク", tools:[
+      {id:uid(), name:"棚卸ツール", url:"https://h02050d-ship-it.github.io/tanaoroshi/", desc:"スマホで工場の実地棚卸。品目タップ→束数・バラ入力→スプシ棚卸タブへ自動保存。電卓つき", icon:"棚"},
       {id:uid(), name:"経営コーチボード", url:"https://h02050d-ship-it.github.io/coach-board/", desc:"毎朝の「今日やるべき優先3つ」と、週次・月次・四半期・年度のふりかえりが読める。進行中の案件が今どれだけ止まっているかが一目でわかる", icon:"コ"},
       {id:uid(), name:"社内通知 設定", url:"https://h02050d-ship-it.github.io/notify-settings/", desc:"誰に・どの通知（現場呼出/タスク/要返信メール/刃物交換ほか）を受け取るか人ごとに選べる。増えすぎたLINE通知を絞れる", icon:"📣"},
       {id:uid(), name:"会社タスク管理", url:"https://h02050d-ship-it.github.io/task-manager/", desc:"会社全体のタスクを全員で共有。やり忘れ・言った言わないを防ぐ", icon:"✅"},
