@@ -150,7 +150,7 @@
 
 <script>
 const LS_KEY = "tool_portal_v1";
-const SEED_VERSION = 26; // 既存データへ新ツール追加/不要ツール除去/説明文更新を一度だけ反映する版数
+const SEED_VERSION = 27; // 既存データへ新ツール追加/不要ツール除去/説明文更新を一度だけ反映する版数
 // 一度だけ自動削除する（プライベート系・個人向けは登録しない方針。よく使うリンクは廃止）
 const REMOVED_URLS = [
   "https://h02050d-ship-it.github.io/miracosta-dashboard/",
@@ -168,6 +168,7 @@ const DEFAULT = {
   seedVersion:SEED_VERSION,
   cats:[
     {id:uid(), emoji:"🌲", name:"林材木店・仕事", tools:[
+      {id:uid(), name:"在庫入力（スマホ）", url:"https://h02050d-ship-it.github.io/salesboard/mobile.html", desc:"倉庫で数えた実物の束数（910=10入・2m=8入）のままタップ入力→ヤフー楽天へ20入換算で自動反映できる", icon:"📱"},
       {id:uid(), name:"売れ行き＆在庫ボード", url:"https://h02050d-ship-it.github.io/salesboard/", desc:"楽天・ヤフーの売れ行きと在庫がひと目でわかる。スプシと双方向同期で編集もそのまま反映", icon:"📊"},
       {id:uid(), name:"受注・問い合わせ管理", url:"https://h02050d-ship-it.github.io/order-desk/", desc:"楽天・ヤフー・市場の注文と問い合わせを一画面で処理。対応漏れを防げる", icon:"🛒"},
       {id:uid(), name:"西濃送り状デスク", url:"https://h02050d-ship-it.github.io/seino-desk/", desc:"EC以外（市場・電話・持込）の送り状を取引先を選ぶだけで即発行。支店止めにも対応", icon:"🚚"},
