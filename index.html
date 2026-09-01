@@ -150,7 +150,7 @@
 
 <script>
 const LS_KEY = "tool_portal_v1";
-const SEED_VERSION = 31; // 既存データへ新ツール追加/不要ツール除去/説明文更新を一度だけ反映する版数
+const SEED_VERSION = 32; // 既存データへ新ツール追加/不要ツール除去/説明文更新を一度だけ反映する版数
 // 一度だけ自動削除する（プライベート系・個人向けは登録しない方針。よく使うリンクは廃止）
 const REMOVED_URLS = [
   "https://h02050d-ship-it.github.io/miracosta-dashboard/",
@@ -183,7 +183,7 @@ const DEFAULT = {
       {id:uid(), name:"林材木店 HP", url:"https://hayazai.com/", desc:"自社ホームページ。製品情報・価格のご案内はここから", icon:"🌲"},
     ]},
     {id:uid(), emoji:"📊", name:"経営・書類", tools:[
-      {id:uid(), name:"領収書デスク", url:"https://h02050d-ship-it.github.io/ryoshusho/", desc:"領収書をその場で発行できる。自動採番・PDFはDriveに自動控え・収入印紙の要否も自動判定", icon:"🧾"},
+      {id:uid(), name:"領収書発行ツール", url:"https://h02050d-ship-it.github.io/ryoshusho/", desc:"領収書をその場で発行できる。自動採番・PDFはDriveに自動控え・収入印紙の要否も自動判定", icon:"🧾"},
       {id:uid(), name:"振込照合デスク", url:"https://h02050d-ship-it.github.io/furikomi-check/", desc:"毎月15日の遠州信金 総合振込：WEB-FB取込用CSVのダウンロードと請求書照合チェック", icon:"振"},
       {id:uid(), name:"在庫推定・適正在庫", url:"https://h02050d-ship-it.github.io/salesboard/tekisei.html", desc:"全社の在庫額を月次で推定し、原板の規格別に需給・スポット購入の目安を提示。仕入れ判断に使える", icon:"🎯"},
       {id:uid(), name:"経営日報", url:"https://h02050d-ship-it.github.io/keiei-nippou/", desc:"売上・資金繰り予測・顧客動向を毎朝1画面でチェックできる経営コックピット", icon:"📈"},
@@ -249,7 +249,8 @@ function load(){
     DEFAULT.cats.forEach(dc=> dc.tools.forEach(dt=> descMap.set((dt.url||'').replace(/\/$/,''), dt.desc)));
     v.cats.forEach(c=> c.tools.forEach(t=>{ const d=descMap.get((t.url||'').replace(/\/$/,'')); if(d) t.desc=d; }));
     // ツール改名を一度だけ反映（URL一致のみ。2026-07-17 効率化ボード→モルダー修正ボード）
-    const renameMap = new Map([["https://h02050d-ship-it.github.io/kaizen",{name:"モルダー修正ボード",icon:"🪚"}]]);
+    const renameMap = new Map([["https://h02050d-ship-it.github.io/kaizen",{name:"モルダー修正ボード",icon:"🪚"}],
+      ["https://h02050d-ship-it.github.io/ryoshusho",{name:"領収書発行ツール",icon:"🧾"}]]);
     v.cats.forEach(c=> c.tools.forEach(t=>{ const r=renameMap.get((t.url||'').replace(/\/$/,'')); if(r){ t.name=r.name; t.icon=r.icon; } }));
     v.seedVersion = SEED_VERSION;
     localStorage.setItem(LS_KEY, JSON.stringify(v));
