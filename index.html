@@ -150,7 +150,7 @@
 
 <script>
 const LS_KEY = "tool_portal_v1";
-const SEED_VERSION = 34; // 既存データへ新ツール追加/不要ツール除去/説明文更新を一度だけ反映する版数
+const SEED_VERSION = 35; // 既存データへ新ツール追加/不要ツール除去/説明文更新を一度だけ反映する版数
 // 一度だけ自動削除する（プライベート系・個人向けは登録しない方針。よく使うリンクは廃止）
 const REMOVED_URLS = [
   "https://h02050d-ship-it.github.io/miracosta-dashboard/",
@@ -183,6 +183,7 @@ const DEFAULT = {
       {id:uid(), name:"林材木店 HP", url:"https://hayazai.com/", desc:"自社ホームページ。製品情報・価格のご案内はここから", icon:"🌲"},
     ]},
     {id:uid(), emoji:"📊", name:"経営・書類", tools:[
+      {id:uid(), name:"取引先別 売上前年比", url:"https://h02050d-ship-it.github.io/uriage-yoy/", desc:"どの取引先・市場で売上が減ったか増えたかを前年同期と比べて一目で分かる（市売・付売・EC・HP直販）", icon:"📉"},
       {id:uid(), name:"13週資金繰り表", url:"https://h02050d-ship-it.github.io/shikin-guri/", desc:"13週先までの週末残高と貸越が必要になる週が一目で分かる。前提を変えれば即再計算・シナリオ比較もできる", icon:"💹"},
       {id:uid(), name:"領収書発行ツール", url:"https://h02050d-ship-it.github.io/ryoshusho/", desc:"領収書をその場で発行できる。自動採番・PDFはDriveに自動控え・収入印紙の要否も自動判定", icon:"🧾"},
       {id:uid(), name:"振込照合デスク", url:"https://h02050d-ship-it.github.io/furikomi-check/", desc:"毎月15日の遠州信金 総合振込：WEB-FB取込用CSVのダウンロードと請求書照合チェック", icon:"振"},
