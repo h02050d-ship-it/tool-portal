@@ -150,7 +150,7 @@
 
 <script>
 const LS_KEY = "tool_portal_v1";
-const SEED_VERSION = 35; // 既存データへ新ツール追加/不要ツール除去/説明文更新を一度だけ反映する版数
+const SEED_VERSION = 36; // 既存データへ新ツール追加/不要ツール除去/説明文更新を一度だけ反映する版数
 // 一度だけ自動削除する（プライベート系・個人向けは登録しない方針。よく使うリンクは廃止）
 const REMOVED_URLS = [
   "https://h02050d-ship-it.github.io/miracosta-dashboard/",
@@ -168,6 +168,7 @@ const DEFAULT = {
   seedVersion:SEED_VERSION,
   cats:[
     {id:uid(), emoji:"🌲", name:"林材木店・仕事", tools:[
+      {id:uid(), name:"加工予定表 AI学習", url:"https://h02050d-ship-it.github.io/kakou-ai-train/", desc:"AIの入力ミス指摘に✔✖で答えるだけで加工予定表チェックの精度が上がる", icon:"🎓"},
       {id:uid(), name:"発注デスク", url:"https://h02050d-ship-it.github.io/hacchu/", desc:"段ボール・PPバンド・埋木ピースなど定型の備品発注がワンクリックで送れる。発注書PDFの自動保存と入荷チェックで発注忘れ・催促漏れも防げる", icon:"📦"},
       {id:uid(), name:"在庫入力（スマホ）", url:"https://h02050d-ship-it.github.io/salesboard/mobile.html", desc:"倉庫で数えた実物の束数（910=10入・2m=8入）のままタップ入力→ヤフー楽天へ20入換算で自動反映できる", icon:"📱"},
       {id:uid(), name:"売れ行き＆在庫ボード", url:"https://h02050d-ship-it.github.io/salesboard/", desc:"楽天・ヤフーの売れ行きと在庫がひと目でわかる。スプシと双方向同期で編集もそのまま反映", icon:"📊"},
