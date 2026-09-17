@@ -151,7 +151,7 @@
 
 <script>
 const LS_KEY = "tool_portal_v1";
-const SEED_VERSION = 37; // 既存データへ新ツール追加/不要ツール除去/説明文更新を一度だけ反映する版数
+const SEED_VERSION = 38; // 既存データへ新ツール追加/不要ツール除去/説明文更新を一度だけ反映する版数
 // 一度だけ自動削除する（プライベート系・個人向けは登録しない方針。よく使うリンクは廃止）
 const REMOVED_URLS = [
   "https://h02050d-ship-it.github.io/miracosta-dashboard/",
@@ -203,6 +203,7 @@ const DEFAULT = {
       {id:uid(), name:"工場清掃ボード", url:"https://h02050d-ship-it.github.io/seiso/", desc:"今日やる清掃が自動で並ぶ。チェックするだけで次回期日も自動計算", icon:"🧹"},
     ]},
     {id:uid(), emoji:"✅", name:"管理・タスク", tools:[
+      {id:uid(), name:"公文書ビューア(e-Gov XML)", url:"https://h02050d-ship-it.github.io/kobunsho/", desc:"年金機構・e-Govの通知zipを放り込むだけで通知書・返戻票を表示して印刷/PDF保存。開けないXMLで悩まない", icon:"📄"},
       {id:uid(), name:"やりとりログ", url:"https://h02050d-ship-it.github.io/renraku-log/", desc:"取引先に誰が・どの経路で・何を送ったかが一覧で分かり、別の人が同じ用件を重ねて連絡するのを防げる", icon:"📒"},
       {id:uid(), name:"棚卸ツール", url:"https://h02050d-ship-it.github.io/tanaoroshi/", desc:"スマホで工場の実地棚卸。品目タップ→束数・バラ入力→スプシ棚卸タブへ自動保存。電卓つき", icon:"棚"},
       {id:uid(), name:"経営コーチボード", url:"https://h02050d-ship-it.github.io/coach-board/", desc:"毎朝の「今日やるべき優先3つ」と、週次・月次・四半期・年度のふりかえりが読める。進行中の案件が今どれだけ止まっているかが一目でわかる", icon:"コ"},
