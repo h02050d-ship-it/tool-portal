@@ -70,6 +70,7 @@
     color:var(--sub);font-weight:700;font-size:13px;min-height:38px;box-shadow:none}
   .add-card:hover{color:var(--accent);border-color:var(--accent)}
   .empty{color:var(--sub);text-align:center;padding:50px 20px}
+  .lead-hint{max-width:820px;margin:2px auto 0;padding:6px 22px 0;font-size:12.5px;color:var(--sub);line-height:1.5}
   /* modal */
   .ov{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:20px}
   .ov.show{display:flex}
@@ -110,6 +111,7 @@
   <button class="btn sm" id="importBtn" title="バックアップ読み込み">⤒ 復元</button>
   <input type="file" id="importFile" accept="application/json" hidden>
 </header>
+<div class="lead-hint">各ツールの右下にある💬ボタンから、不具合や変更したいことを送れます。</div>
 <main id="main"></main>
 
 <!-- Tool modal -->
