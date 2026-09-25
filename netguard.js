@@ -88,6 +88,10 @@
         else if (st >= 200 && st < 300) hideBar();
         return r;
       }, function (e) {
+        // 呼び出し側が自分のタイムアウトで打ち切った(AbortController)場合は、同じ signal で再試行しても即中断になるだけ
+        // →再試行も赤帯もせず呼び出し側へ返す（再試行・表示は呼び出し側が持つ）2026-09-25 FAXデスク「3回失敗（中断・inbox）」の原因
+        var sig = (init && init.signal) || (isReq && input.signal);
+        if ((e && e.name === 'AbortError') || (sig && sig.aborted)) throw e;
         if (attempt < MAX && isGet) return delay(2000 * attempt).then(run);
         fail(url, (e && e.name === 'AbortError') ? '中断' : '通信エラー', attempt);
         throw e;
